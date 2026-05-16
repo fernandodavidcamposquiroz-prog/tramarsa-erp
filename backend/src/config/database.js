@@ -1,7 +1,11 @@
 const { Pool } = require('pg');
 const config = require('./env');
 
-const pool = new Pool(config.db);
+const poolConfig = process.env.DATABASE_URL
+  ? { connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } }
+  : config.db;
+
+const pool = new Pool(poolConfig);
 
 pool.on('connect', () => {
   if (config.nodeEnv !== 'production') {

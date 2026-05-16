@@ -137,7 +137,8 @@ async function migrate() {
 }
 
 migrate().catch(err => {
-  console.error('[MIGRATE] Error:', err.message);
+  console.error('[MIGRATE] Error:', err.message || err);
+  console.error('[MIGRATE] Stack:', err.stack);
   process.exit(1);
 });
 
