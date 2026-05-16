@@ -2,5 +2,5 @@
 // ENTORNO PRODUCCION - Angular usa este con ng build --configuration=production
 export const environment = {
   production: true,
-  apiUrl: 'https://TU-BACKEND-URL.railway.app/api'  // cambiar al desplegar
+  apiUrl: 'https://tramarsa-erp-production.up.railway.app/api'
 };
