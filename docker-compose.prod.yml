@@ -1,0 +1,41 @@
+# docker-compose.prod.yml — ENTORNO PRODUCCIÓN
+# Uso: docker-compose -f docker-compose.prod.yml up -d
+
+version: '3.9'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: tramarsa_db
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema:/docker-entrypoint-initdb.d
+    # NO exponer puerto 5432 en producción
+
+  api:
+    build: ./backend
+    container_name: tramarsa_api
+    restart: always
+    env_file: ./backend/.env.production
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    container_name: tramarsa_frontend
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:

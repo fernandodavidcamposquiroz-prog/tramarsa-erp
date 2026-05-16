@@ -1,0 +1,43 @@
+# docker-compose.yml — ENTORNO LOCAL
+# Uso: docker-compose up
+
+version: '3.9'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: tramarsa_db
+    restart: unless-stopped
+    env_file: .env.example
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema:/docker-entrypoint-initdb.d   # carga esquemas al iniciar
+
+  api:
+    build: ./backend
+    container_name: tramarsa_api
+    restart: unless-stopped
+    env_file: ./backend/.env.local
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    volumes:
+      - ./backend/src:/app/src   # hot reload en local
+
+  frontend:
+    build: ./frontend
+    container_name: tramarsa_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
