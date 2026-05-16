@@ -1,0 +1,84 @@
+<div class="page">
+  <div class="page-header">
+    <h2><i class="bi bi-receipt"></i> Ventas</h2>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn" [class.active]="activeTab === 'facturas'" (click)="setTab('facturas')">
+      <i class="bi bi-file-earmark-text"></i> Facturas
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'clientes'" (click)="setTab('clientes')">
+      <i class="bi bi-people"></i> Clientes
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading">Cargando...</div>
+
+  <!-- Facturas Tab -->
+  <div *ngIf="!loading && activeTab === 'facturas'" class="tab-content">
+    <div class="filter-bar">
+      <span>Filtrar por estado:</span>
+      <button class="filter-btn" [class.active]="filtroEstado === ''" (click)="setFiltro('')">Todos</button>
+      <button class="filter-btn" [class.active]="filtroEstado === 'pendiente'" (click)="setFiltro('pendiente')">Pendiente</button>
+      <button class="filter-btn" [class.active]="filtroEstado === 'parcial'" (click)="setFiltro('parcial')">Parcial</button>
+      <button class="filter-btn" [class.active]="filtroEstado === 'pagada'" (click)="setFiltro('pagada')">Pagada</button>
+      <button class="filter-btn" [class.active]="filtroEstado === 'vencida'" (click)="setFiltro('vencida')">Vencida</button>
+    </div>
+
+    <div class="card">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Número</th>
+            <th>Cliente</th>
+            <th>Fecha Emisión</th>
+            <th>Vencimiento</th>
+            <th>Total (S/)</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let f of filteredFacturas">
+            <td><strong>{{ f.numero }}</strong></td>
+            <td>{{ f.cliente_nombre || '—' }}</td>
+            <td>{{ f.fecha_emision | date:'dd/MM/yyyy' }}</td>
+            <td>{{ f.fecha_vencimiento | date:'dd/MM/yyyy' }}</td>
+            <td>{{ f.total | number:'1.2-2' }}</td>
+            <td><span class="badge badge-{{ f.estado }}">{{ f.estado }}</span></td>
+          </tr>
+          <tr *ngIf="filteredFacturas.length === 0">
+            <td colspan="6" class="empty">No se encontraron facturas</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Clientes Tab -->
+  <div *ngIf="!loading && activeTab === 'clientes'" class="tab-content">
+    <div class="card">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>RUC</th>
+            <th>Razón Social</th>
+            <th>Email</th>
+            <th>Tipo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of clientes">
+            <td>{{ c.ruc }}</td>
+            <td>{{ c.razon_social }}</td>
+            <td>{{ c.email }}</td>
+            <td>{{ c.tipo }}</td>
+          </tr>
+          <tr *ngIf="clientes.length === 0">
+            <td colspan="4" class="empty">No hay clientes registrados</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

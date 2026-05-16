@@ -1,0 +1,55 @@
+<div class="dashboard">
+  <div class="page-header">
+    <h2><i class="bi bi-speedometer2"></i> Dashboard - Gestion de Cobranza TRAMARSA</h2>
+  </div>
+
+  <div *ngIf="loading" class="loading">Cargando...</div>
+
+  <ng-container *ngIf="!loading && kpis">
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card kpi-warning">
+        <div class="kpi-value">{{ kpis.facturas_pendientes }}</div>
+        <div class="kpi-label">Facturas Pendientes</div>
+      </div>
+      <div class="kpi-card kpi-danger">
+        <div class="kpi-value">{{ kpis.facturas_vencidas }}</div>
+        <div class="kpi-label">Facturas Vencidas</div>
+      </div>
+      <div class="kpi-card kpi-info">
+        <div class="kpi-value">S/ {{ kpis.monto_por_cobrar | number:'1.2-2' }}</div>
+        <div class="kpi-label">Monto por Cobrar</div>
+      </div>
+      <div class="kpi-card kpi-success">
+        <div class="kpi-value">S/ {{ kpis.monto_cobrado | number:'1.2-2' }}</div>
+        <div class="kpi-label">Monto Cobrado</div>
+      </div>
+    </div>
+
+    <!-- DSO -->
+    <div class="dso-badge">
+      DSO Promedio: <strong>{{ kpis.dso_promedio_dias }} dias</strong>
+    </div>
+
+    <!-- Estado de Facturas -->
+    <div class="card" *ngIf="porEstado.length > 0">
+      <h3>Estado de Facturas</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Estado</th>
+            <th>Cantidad</th>
+            <th>Monto Total (S/)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of porEstado">
+            <td><span class="badge" [class]="'badge-' + item.estado">{{ item.estado }}</span></td>
+            <td>{{ item.cantidad }}</td>
+            <td>{{ item.monto_total | number:'1.2-2' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+</div>

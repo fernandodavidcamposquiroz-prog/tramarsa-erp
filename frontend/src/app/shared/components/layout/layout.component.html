@@ -1,0 +1,54 @@
+<div class="app-shell">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <i class="bi bi-tsunami brand-icon"></i>
+      <div>
+        <div class="brand-name">TRAMARSA</div>
+        <div class="brand-sub">ERP Sistema</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
+        <i class="bi bi-speedometer2 nav-icon"></i>
+        <span>Dashboard</span>
+      </a>
+      <a routerLink="/ventas" routerLinkActive="active" class="nav-link">
+        <i class="bi bi-receipt nav-icon"></i>
+        <span>Ventas</span>
+      </a>
+      <a routerLink="/compras" routerLinkActive="active" class="nav-link">
+        <i class="bi bi-cart3 nav-icon"></i>
+        <span>Compras</span>
+      </a>
+      <a routerLink="/inventarios" routerLinkActive="active" class="nav-link">
+        <i class="bi bi-boxes nav-icon"></i>
+        <span>Inventarios</span>
+      </a>
+      <a routerLink="/cobranza" routerLinkActive="active" class="nav-link">
+        <i class="bi bi-cash-coin nav-icon"></i>
+        <span>Cobranza</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main area -->
+  <div class="main-area">
+    <header class="topbar">
+      <div class="topbar-title">ERP TRAMARSA</div>
+      <div class="topbar-user" *ngIf="user$ | async as user">
+        <i class="bi bi-person-circle user-icon"></i>
+        <span class="user-name">{{ user.nombre }}</span>
+        <span class="user-role badge">{{ user.rol }}</span>
+        <button class="btn-logout" (click)="logout()">
+          <i class="bi bi-box-arrow-right"></i> Salir
+        </button>
+      </div>
+    </header>
+
+    <main class="content">
+      <router-outlet />
+    </main>
+  </div>
+</div>

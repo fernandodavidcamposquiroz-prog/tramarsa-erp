@@ -1,0 +1,272 @@
+<div class="page">
+  <div class="page-header">
+    <h2><i class="bi bi-cash-coin"></i> Cobranza</h2>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn" [class.active]="activeTab === 'cuentas'" (click)="setTab('cuentas')">
+      <i class="bi bi-list-check"></i> Cuentas por Cobrar
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'pagos'" (click)="setTab('pagos')">
+      <i class="bi bi-check2-circle"></i> Pagos Registrados
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'extracto'" (click)="setTab('extracto')">
+      <i class="bi bi-bank"></i> Extracto Bancario
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'detraccion'" (click)="setTab('detraccion')">
+      <i class="bi bi-patch-check"></i> Validar Detraccion
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading">Cargando...</div>
+
+  <!-- ==================== TAB 1: Cuentas por Cobrar ==================== -->
+  <div *ngIf="!loading && activeTab === 'cuentas'" class="tab-content">
+    <div class="summary-row">
+      <div class="summary-stat stat-blue">
+        <span class="stat-label">Total Pendiente</span>
+        <span class="stat-value">S/ {{ totalPendiente | number:'1.2-2' }}</span>
+      </div>
+      <div class="summary-stat stat-red">
+        <span class="stat-label">Facturas Vencidas</span>
+        <span class="stat-value">{{ countVencidas }}</span>
+      </div>
+    </div>
+
+    <div class="alert alert-success" *ngIf="pagoSuccess">Pago registrado correctamente.</div>
+
+    <div class="card">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Número</th>
+            <th>Cliente</th>
+            <th>Vencimiento</th>
+            <th>Total (S/)</th>
+            <th>Estado</th>
+            <th>Días Vencida</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of cuentasPorCobrar">
+            <td><strong>{{ c.numero }}</strong></td>
+            <td>{{ c.cliente_nombre || '—' }}</td>
+            <td>{{ c.fecha_vencimiento | date:'dd/MM/yyyy' }}</td>
+            <td>{{ c.total | number:'1.2-2' }}</td>
+            <td><span class="badge badge-{{ c.estado }}">{{ c.estado }}</span></td>
+            <td>
+              <span *ngIf="c.dias_vencida > 0" class="text-danger">{{ c.dias_vencida }} días</span>
+              <span *ngIf="!c.dias_vencida || c.dias_vencida <= 0">—</span>
+            </td>
+            <td>
+              <button
+                *ngIf="c.estado !== 'pagada'"
+                class="btn-action"
+                (click)="openPagoForm(c)"
+              >Registrar Pago</button>
+            </td>
+          </tr>
+          <tr *ngIf="cuentasPorCobrar.length === 0">
+            <td colspan="7" class="empty">No hay cuentas por cobrar</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Inline Pago Form -->
+    <div class="pago-form-panel" *ngIf="showPagoForm && selectedFactura">
+      <div class="pago-form-header">
+        <h4>Registrar Pago — {{ selectedFactura.numero }}</h4>
+        <button class="btn-close" (click)="closePagoForm()">X</button>
+      </div>
+      <form [formGroup]="registrarPagoForm" (ngSubmit)="registrarPago()">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Fecha de Pago</label>
+            <input type="date" formControlName="fecha_pago" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label>Monto (S/)</label>
+            <input type="number" formControlName="monto" class="form-input" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label>Tipo de Pago</label>
+            <select formControlName="tipo" class="form-input">
+              <option value="completo">Completo</option>
+              <option value="parcial">Parcial</option>
+              <option value="anticipo">Anticipo</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Referencia / Nro. Operación</label>
+            <input type="text" formControlName="referencia" class="form-input" placeholder="BCP-2024-..." />
+          </div>
+        </div>
+        <div class="alert alert-error" *ngIf="pagoError">{{ pagoError }}</div>
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" [disabled]="registrarPagoForm.invalid">Confirmar Pago</button>
+          <button type="button" class="btn-secondary" (click)="closePagoForm()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 2: Pagos ==================== -->
+  <div *ngIf="!loading && activeTab === 'pagos'" class="tab-content">
+    <div class="card">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Factura</th>
+            <th>Cliente</th>
+            <th>Fecha</th>
+            <th>Monto (S/)</th>
+            <th>Tipo</th>
+            <th>Referencia</th>
+            <th>Detracción</th>
+            <th>SUNAT</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of pagos">
+            <td>{{ p.factura_numero || p.factura_id }}</td>
+            <td>{{ p.cliente_nombre || '—' }}</td>
+            <td>{{ p.fecha_pago | date:'dd/MM/yyyy' }}</td>
+            <td>{{ p.monto | number:'1.2-2' }}</td>
+            <td><span class="badge badge-{{ p.tipo }}">{{ p.tipo }}</span></td>
+            <td>{{ p.referencia }}</td>
+            <td>
+              <span *ngIf="p.monto_detraccion > 0">S/ {{ p.monto_detraccion | number:'1.2-2' }}</span>
+              <span *ngIf="!p.monto_detraccion || p.monto_detraccion === 0">—</span>
+            </td>
+            <td>
+              <span class="badge" [class.badge-pagada]="p.validado_sunat" [class.badge-vencida]="!p.validado_sunat">
+                {{ p.validado_sunat ? 'Validado' : 'Pendiente' }}
+              </span>
+            </td>
+          </tr>
+          <tr *ngIf="pagos.length === 0">
+            <td colspan="8" class="empty">No hay pagos registrados</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 3: Extracto Bancario ==================== -->
+  <div *ngIf="!loading && activeTab === 'extracto'" class="tab-content">
+    <div class="action-bar">
+      <button class="btn-primary" (click)="cargarExtractoBanco()" [disabled]="loadingExtracto">
+        <span *ngIf="!loadingExtracto"><i class="bi bi-cloud-download"></i> Cargar Extracto del Banco (Simulado)</span>
+        <span *ngIf="loadingExtracto">Cargando...</span>
+      </button>
+    </div>
+
+    <div class="card">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Descripción</th>
+            <th>Monto (S/)</th>
+            <th>Referencia</th>
+            <th>Estado</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let e of extractos">
+            <td>{{ e.fecha | date:'dd/MM/yyyy' }}</td>
+            <td>{{ e.descripcion }}</td>
+            <td>{{ e.monto | number:'1.2-2' }}</td>
+            <td>{{ e.referencia }}</td>
+            <td>
+              <span class="badge" [class.badge-pagada]="e.estado === 'emparejado'" [class.badge-vencida]="e.estado === 'no_identificado'">
+                {{ e.estado === 'emparejado' ? 'Emparejado' : 'Sin identificar' }}
+              </span>
+            </td>
+            <td>
+              <div *ngIf="e.estado === 'no_identificado'" class="emparejar-row">
+                <select class="form-input-sm" [(ngModel)]="emparejarFacturaId[e.id]" [ngModelOptions]="{standalone: true}">
+                  <option [value]="undefined">— Seleccionar factura —</option>
+                  <option *ngFor="let c of cuentasPorCobrar" [value]="c.id">{{ c.numero }} - {{ c.cliente_nombre }}</option>
+                </select>
+                <button class="btn-action" (click)="emparejarPago(e.id)" [disabled]="!emparejarFacturaId[e.id]">Emparejar</button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="extractos.length === 0">
+            <td colspan="6" class="empty">No hay extractos cargados. Presione "Cargar Extracto"</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ==================== TAB 4: Validar Detracción ==================== -->
+  <div *ngIf="!loading && activeTab === 'detraccion'" class="tab-content">
+    <div class="detraccion-panel">
+      <h3>Validar Detraccion - SUNAT (Mock)</h3>
+      <p class="hint-text">Simula la consulta al sistema de detracciones de SUNAT para verificar si aplica detracción al servicio.</p>
+
+      <form [formGroup]="detraccionForm" (ngSubmit)="validarDetraccion()" class="detraccion-form">
+        <div class="form-group">
+          <label>RUC del Cliente</label>
+          <input type="text" formControlName="ruc" class="form-input" placeholder="20XXXXXXXXX" maxlength="11" />
+          <span class="field-error" *ngIf="detraccionForm.get('ruc')?.invalid && detraccionForm.get('ruc')?.touched">
+            RUC debe tener 11 dígitos
+          </span>
+        </div>
+        <div class="form-group">
+          <label>Monto de la Operación (S/)</label>
+          <input type="number" formControlName="monto" class="form-input" step="0.01" placeholder="0.00" />
+        </div>
+        <div class="form-group">
+          <label>Tipo de Servicio</label>
+          <select formControlName="tipo_servicio" class="form-input">
+            <option value="">— Seleccione —</option>
+            <option value="transporte_maritimo">Transporte Marítimo</option>
+            <option value="agenciamiento_maritimo">Agenciamiento Marítimo</option>
+            <option value="carga_descarga">Carga y Descarga</option>
+            <option value="almacenamiento">Almacenamiento</option>
+            <option value="otros">Otros Servicios</option>
+          </select>
+        </div>
+
+        <div class="alert alert-error" *ngIf="detraccionError">{{ detraccionError }}</div>
+
+        <button type="submit" class="btn-primary" [disabled]="detraccionForm.invalid || loadingDetraccion">
+          <span *ngIf="!loadingDetraccion"><i class="bi bi-search"></i> Validar con SUNAT</span>
+          <span *ngIf="loadingDetraccion">Consultando...</span>
+        </button>
+      </form>
+
+      <!-- Resultado SUNAT -->
+      <div class="sunat-result" *ngIf="detraccionResult">
+        <h4>Resultado de la Consulta</h4>
+        <div class="result-grid">
+          <div class="result-item">
+            <span class="result-label">Aplica Detracción</span>
+            <span class="result-value" [class.text-success]="detraccionResult.aplica" [class.text-muted]="!detraccionResult.aplica">
+              {{ detraccionResult.aplica ? 'SI' : 'NO' }}
+            </span>
+          </div>
+          <div class="result-item" *ngIf="detraccionResult.aplica">
+            <span class="result-label">Tasa</span>
+            <span class="result-value">{{ detraccionResult.tasa }}%</span>
+          </div>
+          <div class="result-item" *ngIf="detraccionResult.aplica">
+            <span class="result-label">Monto Detracción</span>
+            <span class="result-value">S/ {{ detraccionResult.monto_detraccion | number:'1.2-2' }}</span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Mensaje</span>
+            <span class="result-value">{{ detraccionResult.mensaje }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

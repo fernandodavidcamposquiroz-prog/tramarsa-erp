@@ -1,0 +1,126 @@
+.page {
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+
+    h2 { font-size: 1.4rem; font-weight: 700; color: #1e2a4a; margin: 0; }
+  }
+}
+
+.summary-stat {
+  background: #ebf8ff;
+  color: #2b6cb0;
+  border: 1px solid #bee3f8;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.88rem;
+}
+
+.loading { text-align: center; padding: 40px; color: #718096; }
+
+/* ── Filter Pills ── */
+.filter-pills {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  padding: 6px 16px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 20px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.82rem;
+  color: #4a5568;
+  transition: all 0.2s;
+
+  &:hover { border-color: #4a90d9; color: #4a90d9; }
+  &.active { background: #4a90d9; color: #fff; border-color: #4a90d9; }
+}
+
+/* ── Cards Grid ── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+.service-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  transition: transform 0.15s, box-shadow 0.15s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  }
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.cat-badge {
+  background: #e9d8fd;
+  color: #6b46c1;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.service-code {
+  font-size: 0.75rem;
+  color: #a0aec0;
+  font-family: monospace;
+}
+
+.service-name {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #1e2a4a;
+  margin: 0 0 6px;
+}
+
+.service-desc {
+  font-size: 0.82rem;
+  color: #718096;
+  margin: 0 0 14px;
+  line-height: 1.5;
+}
+
+.card-footer {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  border-top: 1px solid #f0f4f8;
+  padding-top: 12px;
+
+  .price {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e2a4a;
+  }
+  .unit {
+    font-size: 0.78rem;
+    color: #a0aec0;
+  }
+}
+
+.empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #a0aec0;
+  padding: 40px;
+  font-style: italic;
+}

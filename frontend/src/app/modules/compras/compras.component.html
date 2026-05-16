@@ -1,0 +1,82 @@
+<div class="page">
+  <div class="page-header">
+    <h2><i class="bi bi-cart3"></i> Compras</h2>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn" [class.active]="activeTab === 'ordenes'" (click)="setTab('ordenes')">
+      <i class="bi bi-clipboard-check"></i> Ordenes de Compra
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'proveedores'" (click)="setTab('proveedores')">
+      <i class="bi bi-building"></i> Proveedores
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading">Cargando...</div>
+
+  <!-- Órdenes Tab -->
+  <div *ngIf="!loading && activeTab === 'ordenes'" class="tab-content">
+    <div class="card">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Número</th>
+            <th>Proveedor</th>
+            <th>Fecha</th>
+            <th>Total (S/)</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let o of ordenes">
+            <td><strong>{{ o.numero }}</strong></td>
+            <td>{{ o.proveedor_nombre || '—' }}</td>
+            <td>{{ o.fecha | date:'dd/MM/yyyy' }}</td>
+            <td>{{ o.total | number:'1.2-2' }}</td>
+            <td><span class="badge badge-{{ o.estado }}">{{ o.estado }}</span></td>
+            <td>
+              <ng-container *ngIf="getNextEstado(o) as next">
+                <button class="btn-action" (click)="actualizarEstado(o.id, next.value)">
+                  {{ next.label }}
+                </button>
+              </ng-container>
+              <span *ngIf="!getNextEstado(o)" class="text-muted">—</span>
+            </td>
+          </tr>
+          <tr *ngIf="ordenes.length === 0">
+            <td colspan="6" class="empty">No hay órdenes de compra</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Proveedores Tab -->
+  <div *ngIf="!loading && activeTab === 'proveedores'" class="tab-content">
+    <div class="card">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>RUC</th>
+            <th>Razón Social</th>
+            <th>Email</th>
+            <th>Tipo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of proveedores">
+            <td>{{ p.ruc }}</td>
+            <td>{{ p.razon_social }}</td>
+            <td>{{ p.email }}</td>
+            <td>{{ p.tipo }}</td>
+          </tr>
+          <tr *ngIf="proveedores.length === 0">
+            <td colspan="4" class="empty">No hay proveedores registrados</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

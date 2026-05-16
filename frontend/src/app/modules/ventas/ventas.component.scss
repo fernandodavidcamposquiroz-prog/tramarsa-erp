@@ -1,0 +1,115 @@
+.page {
+  .page-header {
+    margin-bottom: 20px;
+    h2 { font-size: 1.4rem; font-weight: 700; color: #1e2a4a; margin: 0; }
+  }
+}
+
+.loading { text-align: center; padding: 40px; color: #718096; }
+
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 20px;
+}
+
+.tab-btn {
+  padding: 10px 20px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #718096;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: color 0.2s, border-color 0.2s;
+
+  &:hover { color: #1e2a4a; }
+  &.active {
+    color: #1e2a4a;
+    border-bottom-color: #4a90d9;
+    font-weight: 600;
+  }
+}
+
+/* ── Filter ── */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  font-size: 0.88rem;
+  color: #4a5568;
+}
+
+.filter-btn {
+  padding: 5px 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 20px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.82rem;
+  color: #4a5568;
+  transition: all 0.2s;
+
+  &:hover { border-color: #4a90d9; color: #4a90d9; }
+  &.active { background: #4a90d9; color: #fff; border-color: #4a90d9; }
+}
+
+/* ── Card + Table ── */
+.card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+
+  th {
+    text-align: left;
+    padding: 10px 12px;
+    background: #f7fafc;
+    color: #4a5568;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    border-bottom: 2px solid #e2e8f0;
+  }
+  td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f0f4f8;
+    color: #2d3748;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #fafbff; }
+}
+
+/* ── Badges ── */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+
+  &.badge-pendiente { background: #fefcbf; color: #975a16; }
+  &.badge-parcial   { background: #bee3f8; color: #2c5282; }
+  &.badge-pagada    { background: #c6f6d5; color: #276749; }
+  &.badge-vencida   { background: #fed7d7; color: #9b2335; }
+}
+
+.empty {
+  text-align: center;
+  color: #a0aec0;
+  padding: 20px;
+  font-style: italic;
+}
