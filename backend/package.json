@@ -4,7 +4,7 @@
   "description": "TRAMARSA ERP - API REST",
   "main": "src/app.js",
   "scripts": {
-    "start": "node src/app.js",
+    "start": "node src/start.js",
     "dev": "nodemon src/app.js",
     "db:migrate": "node src/config/migrate.js",
     "db:seed": "node src/config/seed.js"
