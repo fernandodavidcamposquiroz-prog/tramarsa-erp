@@ -7,7 +7,17 @@ const errorHandler = require('./middlewares/errorHandler');
 const app = express();
 
 // Middlewares globales
-app.use(cors({ origin: config.cors.origin, credentials: true }));
+// CORS: acepta lista separada por comas o valor único
+const allowedOrigins = (config.cors.origin || 'http://localhost:4200')
+  .split(',').map(o => o.trim());
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error('CORS no permitido: ' + origin));
+  },
+  credentials: true
+}));
 app.use(express.json());
 
 // Health check
