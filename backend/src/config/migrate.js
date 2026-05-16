@@ -3,7 +3,7 @@ const path = require('path');
 const db   = require('./database');
 
 async function migrate() {
-  const schemaDir = path.resolve(__dirname, '../../../database/schema');
+  const schemaDir = path.resolve(__dirname, '../../database/schema');
   const files = fs.readdirSync(schemaDir).filter(f => f.endsWith('.sql')).sort();
 
   for (const file of files) {

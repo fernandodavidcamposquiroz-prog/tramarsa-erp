@@ -3,7 +3,7 @@ const path = require('path');
 const db   = require('./database');
 
 async function seed() {
-  const seedDir = path.resolve(__dirname, '../../../database/seeds');
+  const seedDir = path.resolve(__dirname, '../../database/seeds');
   const files = fs.readdirSync(seedDir).filter(f => f.endsWith('.sql')).sort();
 
   for (const file of files) {
